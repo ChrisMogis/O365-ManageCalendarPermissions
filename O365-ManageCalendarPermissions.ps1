@@ -1,5 +1,5 @@
 ﻿################################################################################################
-# This script is used to manage rights on users' calendars on Office 365.                      #
+# This script is used to manage rights on user's calendars on Office 365.                      #
 # Editor : Christopher Mogis                                                                   #
 # Date : 06/03/2022                                                                            #
 # Version 1.0                                                                                  #
