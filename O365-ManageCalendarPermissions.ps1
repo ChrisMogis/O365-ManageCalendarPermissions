@@ -13,7 +13,7 @@ $Choose
 )
 
 #Variables
-$Cred = "cmogis_a@interfacerepublic.fr"
+$Cred = "adminaccount@yourdomain.fr"
 
 #Set Powershell Execution policy
 Set-ExecutionPolicy RemoteSigned -Force
