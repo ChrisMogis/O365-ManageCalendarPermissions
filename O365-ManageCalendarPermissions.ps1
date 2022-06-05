@@ -1,8 +1,8 @@
-﻿################################################################################################
-# This script is used to manage rights on user's calendars on Office 365.                      #
+################################################################################################
+# This script is used to manage rights on users' calendars on Office 365.                      #
 # Editor : Christopher Mogis                                                                   #
 # Date : 06/03/2022                                                                            #
-# Version 1.0                                                                                  #
+# Version 1.1                                                                                  #
 ################################################################################################
 
 Param(
@@ -11,9 +11,6 @@ Param(
 [String[]]
 $Choose
 )
-
-#Variables
-$Cred = "adminaccount@yourdomain.fr"
 
 #Set Powershell Execution policy
 Set-ExecutionPolicy RemoteSigned -Force
@@ -25,7 +22,7 @@ Install-Module PowershellGet -Force
 Install-Module -Name ExchangeOnlineManagement 
 
 #Connect to exchange online
-Connect-ExchangeOnline -UserPrincipalName $Cred
+Connect-ExchangeOnline
 
 #Targeted User Information
 Add-Type -AssemblyName System.Windows.Forms
@@ -61,10 +58,10 @@ $form.Add_Shown({$textBox.Select()})
 $result = $form.ShowDialog()
 
 If ($result -eq [System.Windows.Forms.DialogResult]::OK)
-{
+    {
     $TargetUser = $textBox.Text
     $TargetUser
-}
+    }
 
 If ($Choose -eq "Info")
     {
@@ -74,7 +71,7 @@ Get-MailboxFolderPermission -Identity "$($TargetUser):\Calendrier" | ft Identity
     }
 
 If ($Choose -eq "Add")
-{
+    {
 #Delegated User Information
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -119,12 +116,12 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $form = New-Object System.Windows.Forms.Form
-$form.Text = 'Question'
+$form.Text = 'Select Permission'
 $form.Size = New-Object System.Drawing.Size(300,200)
 $form.StartPosition = 'CenterScreen'
 
 $okButton = New-Object System.Windows.Forms.Button
-$okButton.Location = New-Object System.Drawing.Point(75,120)
+$okButton.Location = New-Object System.Drawing.Point(100,120)
 $okButton.Size = New-Object System.Drawing.Size(75,23)
 $okButton.Text = 'OK'
 $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
@@ -134,27 +131,39 @@ $form.Controls.Add($okButton)
 $label = New-Object System.Windows.Forms.Label
 $label.Location = New-Object System.Drawing.Point(10,20)
 $label.Size = New-Object System.Drawing.Size(280,20)
-$label.Text = 'Enter the name of the user receiving the rights:'
+$label.Text = 'Please select the permission :'
 $form.Controls.Add($label)
 
-$textBox = New-Object System.Windows.Forms.TextBox
-$textBox.Location = New-Object System.Drawing.Point(10,40)
-$textBox.Size = New-Object System.Drawing.Size(260,20)
-$form.Controls.Add($textBox)
+$listBox = New-Object System.Windows.Forms.ListBox
+$listBox.Location = New-Object System.Drawing.Point(10,40)
+$listBox.Size = New-Object System.Drawing.Size(260,20)
+$listBox.Height = 80
+
+[void] $listBox.Items.Add('Owner')
+[void] $listBox.Items.Add('PublishEditor')
+[void] $listBox.Items.Add('Editor')
+[void] $listBox.Items.Add('PublishingAuthor')
+[void] $listBox.Items.Add('Author')
+[void] $listBox.Items.Add('NonEditingAuthor')
+[void] $listBox.Items.Add('Reviewer')
+[void] $listBox.Items.Add('Contributor')
+[void] $listBox.Items.Add('LimitedDetails')
+[void] $listBox.Items.Add('AvailabilityOnly')
+
+$form.Controls.Add($listBox)
 
 $form.Topmost = $true
 
-$form.Add_Shown({$textBox.Select()})
 $result = $form.ShowDialog()
 
-If ($result -eq [System.Windows.Forms.DialogResult]::OK)
-    {
-    $DelegatedRight = $textBox.Text
-    $DelegatedRight
-    }
-
-Add-MailboxFolderPermission -Identity "$($TargetUser):\Calendrier" -User $DelegatedUser -AccessRights $DelegatedRight
+if ($result -eq [System.Windows.Forms.DialogResult]::OK)
+{
+    $Permission = $listBox.SelectedItem
+    $Permission
 }
+
+Add-MailboxFolderPermission -Identity "$($TargetUser):\Calendrier" -User $DelegatedUser -AccessRights $Permission
+    }
 
 #Delete Calendar Permission
 If ($Choose -eq "Remove")
