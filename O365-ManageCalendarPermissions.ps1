@@ -1,7 +1,7 @@
 ################################################################################################
 # This script is used to manage rights on users' calendars on Office 365.                      #
 # Editor : Christopher Mogis                                                                   #
-# Date : 06/03/2022                                                                            #
+# Date : 09/06/2022                                                                            #
 # Version 2.0 - Convert select action by drop down menu                                        #
 ################################################################################################
 
